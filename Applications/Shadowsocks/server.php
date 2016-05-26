@@ -84,6 +84,8 @@ $worker->onMessage = function($connection, $buffer)
             $host = $header_data[1];
             $port = $header_data[2];
             $address = "tcp://$host:$port";
+            // TODO : 后续需要将file put contents改为无锁的写入~~~~
+            file_put_contents('/tmp/ss.log', $host. '|||' .$port.PHP_EOL, FILE_APPEND);
             // 异步建立与实际服务器的远程连接
             $remote_connection = new AsyncTcpConnection($address);
             $connection->opposite = $remote_connection;
