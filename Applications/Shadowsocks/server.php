@@ -84,8 +84,11 @@ $worker->onMessage = function($connection, $buffer)
             $host = $header_data[1];
             $port = $header_data[2];
             $address = "tcp://$host:$port";
-            // TODO : 后续需要将file put contents改为无锁的写入~~~~
-            file_put_contents('/tmp/ss.log', $host. '|||' .$port.PHP_EOL, FILE_APPEND);
+            // 添加我自己的log
+            $res = file_put_contents('/var/log/shadowsocks_php_server.log', $host. '|||' .$port.'|||'.date('Y-m-d H:i:s').PHP_EOL, FILE_APPEND);
+            if ($res === false ) {
+                file_put_contents('/tmp/notify_box.sh',"DISPLAY=:0.0 /usr/bin/notify-send 'PHP Shadowsocks Exception' 'Error loging file to /var/log/shadowsocks_php_server.php'".PHP_EOL, FILE_APPEND); 
+            }
             // 异步建立与实际服务器的远程连接
             $remote_connection = new AsyncTcpConnection($address);
             $connection->opposite = $remote_connection;
